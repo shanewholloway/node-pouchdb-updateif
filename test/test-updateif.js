@@ -30,7 +30,9 @@ const exampleBulkDocs = [
 
 function assert_updateReplace(db, obj) {
   return db.update(obj)
-    .then(() => db.get(obj._id))
+    .then(resp => {
+      assert(!!resp)
+      return db.get(obj._id) })
     .then(actual => {
       obj._rev = actual._rev
       assert.deepEqual(actual, obj)
@@ -47,7 +49,9 @@ tap.test('update should work', (test) => {
 function assert_updateOrMerge(db, orig, merge) {
   const expected = Object.assign({}, orig, merge)
   return db.updateOrMerge(merge)
-    .then(() => db.get(orig._id))
+    .then(resp => {
+      assert(!!resp)
+      return db.get(orig._id) })
     .then(actual => {
       expected._rev = actual._rev
       assert.deepEqual(actual, expected)
@@ -68,7 +72,9 @@ function assert_updateIfChanged(db, changed, orig, obj) {
   else assert.deepEqual(orig, obj)
 
   return db.updateIfChanged(obj)
-    .then(() => db.get(orig._id))
+    .then(resp => {
+      assert(!resp ^ changed)
+      return db.get(orig._id) })
     .then(actual => {
       obj._rev = actual._rev
       orig._rev = actual._rev
@@ -87,9 +93,11 @@ tap.test('updateIfChanged should work', (test) => {
 })
 
 
-function assert_updateByVersion(db, orig, other) {
+function assert_updateByVersion(db, changed, orig, other) {
   return db.updateByVersion(other)
-    .then(() => db.get(orig._id))
+    .then(resp => {
+      assert(!resp ^ changed)
+      return db.get(orig._id) })
     .then(actual => {
       other._rev = actual._rev
       orig._rev = actual._rev
@@ -104,8 +112,8 @@ tap.test('updateByVersion should work', (test) => {
   let db = new PouchDB(test.title)
   return db.bulkDocs(exampleBulkDocs)
     .then(() => assert_all(
-      assert_updateByVersion(db, exampleBulkDocs[0], Object.assign({}, exampleBulkDocs[0])),
-      assert_updateByVersion(db, exampleBulkDocs[1], Object.assign({}, exampleBulkDocs[1], {version: 2})),
-      assert_updateByVersion(db, exampleBulkDocs[2], Object.assign({}, exampleBulkDocs[2], {version: 1, blek: 'bingo'})) ))
+      assert_updateByVersion(db, false, exampleBulkDocs[0], Object.assign({}, exampleBulkDocs[0])),
+      assert_updateByVersion(db, true, exampleBulkDocs[1], Object.assign({}, exampleBulkDocs[1], {version: 2})),
+      assert_updateByVersion(db, false, exampleBulkDocs[2], Object.assign({}, exampleBulkDocs[2], {version: 1, blek: 'bingo'})) ))
 })
 

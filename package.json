@@ -1,8 +1,12 @@
 {
   "name": "pouchdb-updateif",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Add update sugar methods over get/put",
-  "keywords": [ "pouchdb", "pouchdb-plugin", "plugin" ],
+  "keywords": [
+    "pouchdb",
+    "pouchdb-plugin",
+    "plugin"
+  ],
   "author": "Shane Holloway <shane.holloway@ieee.org>",
   "license": "ISC",
   "homepage": "https://github.com/shanewholloway/node-pouchdb-updateif",
@@ -10,7 +14,6 @@
   "repository": "shanewholloway/node-pouchdb-updateif",
   "main": "index.js",
   "browser": "index.min.js",
-
   "optionalDependencies": {
     "deep-equal": "^1.0.1"
   },
@@ -21,7 +24,11 @@
     "pouchdb-memory": "^6.0.0",
     "tap-lite-tester": "^0.2.0"
   },
-  "babel": { "presets": [ "es2015" ] },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
   "scripts": {
     "build": "babel --compact true --minified -o index.min.js index.js",
     "prepublish": "npm -s run build && npm -s run test",

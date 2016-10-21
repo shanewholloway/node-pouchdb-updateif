@@ -19,8 +19,7 @@ Object.assign(exports, {
       .then(
         current => {
           const {_id, _rev} = current ? current : {}
-          if (!obj._id && !obj._rev)
-            obj._id = _id, obj._rev = _rev
+          if (!obj._rev) obj._rev = _rev
 
           let ans = applyFn ? applyFn(obj, current, _rev) : obj
           
