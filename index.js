@@ -8,12 +8,12 @@ catch(err) {
     catch (err) { return false } }
 }
 
-function replaceFn(obj, current) { return obj }
-
 Object.assign(exports, {
-  update(obj, applyFn=replaceFn) {
+  updateWith(obj, applyFn) {
     if ('string' === typeof obj)
       obj = {_id: obj}
+    if ('function' !== typeof applyFn)
+      throw new Error("Parameter `applyFn` is required and must be a function")
 
     return this.get(obj._id)
       .then(
@@ -21,7 +21,7 @@ Object.assign(exports, {
           const {_id, _rev} = current ? current : {}
           if (!obj._rev) obj._rev = _rev
 
-          let ans = applyFn ? applyFn(obj, current, _rev) : obj
+          let ans = applyFn(obj, current, _rev)
           
           if (!ans) return ans
 
@@ -36,12 +36,17 @@ Object.assign(exports, {
   },
 
   updateIf(obj, filterFn) {
-    return this.update(obj, (obj, current) =>
+    return this.updateWith(obj, (obj, current) =>
       filterFn(obj, current) ? obj : null) },
 
-  updateOrMerge(obj) {
-    return this.update(obj, (obj, current) =>
+  overwrite(obj) {
+    return this.updateWith(obj, obj => obj) },
+  replace(obj) { return this.overwrite(obj) },
+
+  updateAssign(obj) {
+    return this.updateWith(obj, (obj, current) =>
       current ? Object.assign(current, obj) : obj) },
+  updateOrMerge(obj) { return this.updateAssign(obj) },
 
   _checkNewVersion(obj, current) {
     return !current || obj.version > current.version },

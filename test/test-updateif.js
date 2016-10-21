@@ -10,7 +10,12 @@ PouchDB.plugin(require('../index.js'))
 tap.test('smoke', (test) => {
   let db = new PouchDB(test.title)
 
-  assert.equal('function', typeof db.update)
+  assert.equal('function', typeof db.updateWith)
+
+  assert.equal('function', typeof db.overwrite)
+  assert.equal('function', typeof db.replace)
+
+  assert.equal('function', typeof db.updateAssign)
   assert.equal('function', typeof db.updateOrMerge)
 
   assert.equal('function', typeof db.updateIf)
@@ -29,7 +34,7 @@ const exampleBulkDocs = [
 ]
 
 function assert_updateReplace(db, obj) {
-  return db.update(obj)
+  return db.overwrite(obj)
     .then(resp => {
       assert(!!resp)
       return db.get(obj._id) })
@@ -46,9 +51,9 @@ tap.test('update should work', (test) => {
       assert_updateReplace(db, {_id:'doc_99', created: true}) ))
 })
 
-function assert_updateOrMerge(db, orig, merge) {
+function assert_updateAssign(db, orig, merge) {
   const expected = Object.assign({}, orig, merge)
-  return db.updateOrMerge(merge)
+  return db.updateAssign(merge)
     .then(resp => {
       assert(!!resp)
       return db.get(orig._id) })
@@ -57,12 +62,12 @@ function assert_updateOrMerge(db, orig, merge) {
       assert.deepEqual(actual, expected)
     }) }
 
-tap.test('updateOrMerge should work', (test) => {
+tap.test('updateAssign should work', (test) => {
   let db = new PouchDB(test.title)
   return db.bulkDocs(exampleBulkDocs)
     .then(() => assert_all(
-      assert_updateOrMerge(db, exampleBulkDocs[0], {_id:'doc1', test_changed: true, attr:2142}),
-      assert_updateOrMerge(db, exampleBulkDocs[1], {_id:'doc2', test_changed: true}) ))
+      assert_updateAssign(db, exampleBulkDocs[0], {_id:'doc1', test_changed: true, attr:2142}),
+      assert_updateAssign(db, exampleBulkDocs[1], {_id:'doc2', test_changed: true}) ))
 })
 
 

@@ -1,6 +1,6 @@
 {
   "name": "pouchdb-updateif",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Add update sugar methods over get/put",
   "keywords": [
     "pouchdb",
